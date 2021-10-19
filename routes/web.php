@@ -12,12 +12,14 @@
 */
 Route::get('/', 'MainController@index')->name('index');
 
+// Корзина
+
+Route::get('/basket', 'BasketController@basket')->name('basket');
+Route::get('/basket/place', 'BasketController@basketPlace')->name('basket-place');
+Route::post ('/basket/add/{id}' , 'BasketController@basketAdd')->name('basket-add');
+
+// Категории
+
 Route::get('/categories', 'MainController@categories')->name('categories');
-
 Route::get('/{category}', 'MainController@category')->name('category');
-
 Route::get('/{category}/{product?}', 'MainController@product')->name('product');
-
-Route::get('/basket', 'MainController@basket')->name('basket');
-
-Route::get('/basket/place', 'MainController@basketPlace')->name('basket-place');
