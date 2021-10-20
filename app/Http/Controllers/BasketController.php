@@ -25,7 +25,7 @@ class BasketController extends Controller
     {
         $orderId = session('orderId');
         if (is_null($orderId)) {
-            $order = Order::create()->id;
+            $order = Order::create();
             session(['orderId'=> $order->id]);
         } else {
             $order = Order::find($orderId);
