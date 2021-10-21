@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Product;
 use App\Order;
 use Illuminate\Http\Request;
 
@@ -16,9 +16,33 @@ class BasketController extends Controller
         }
         return view('basket', compact('order'));
     }
+
+    public function basketConfirm(Request $request){
+        $orderId = session ('orderId');;
+        if (is_null($orderId)){
+            return redirect()->route('index');
+        }
+        $order = Order::find($orderId);
+
+        $success = $order->saveOrder($request->name, $request->phone);
+       
+        if ($success) {
+            session()->flash('success', 'Ваш заказ принят в обработку');
+            
+        } else { 
+            session()->flash('warning', 'Произошла ошибка, попробуйте еще раз');
+        }
+
+        return redirect()->route('index');
+    }
+
     public function basketPlace(){
-        
-        return view('order');
+        $orderId = session ('orderId');;
+        if (is_null($orderId)){
+            return redirect()->route('index');
+        }
+        $order = Order::find($orderId);
+        return view('order', compact('order'));
     }
 
     public function basketAdd($productId)
@@ -30,9 +54,38 @@ class BasketController extends Controller
         } else {
             $order = Order::find($orderId);
         }
-        $order->products()->attach($productId);
-        
-        return view('basket' , compact('order'));
+        if ($order->products->contains($productId)){
+            $pivotRow = $order->products()->where('product_id', $productId)->first()->pivot;
+            $pivotRow->count++;
+            $pivotRow->update();
+        } else{
+            $order->products()->attach($productId);
+        }
+        $product = Product::find($productId);
+        session()->flash('success', 'Добавлен товар: '.$product->name);
+        return redirect()->route('basket');
     
     }
+public function basketRemove($productId)
+    {
+    $orderId = session ('orderId');
+    if (is_null($orderId)){
+      return redirect()->route('basket');
+    }
+    $order = Order::find($orderId);
+    if ($order->products->contains($productId)){
+        $pivotRow = $order->products()->where('product_id' , $productId)->first()->pivot;
+        if ($pivotRow->count < 2){
+            $order-> products()->detach($productId);
+        } else {
+            $pivotRow->count--;
+            $pivotRow->update();
+        }
+    }
+    $product = Product::find($productId);
+    
+    session()->flash('warning', 'Товар удален из корзины: '.$product->name);
+
+    return redirect()->route('basket');
+}
 }
