@@ -8,7 +8,6 @@
                 <form action="{{ route('basket-add', $product) }}" method="POST">
                 <button type="submit" class="btn btn-primary" role="button">В корзину</button>
               <a href="{{ route('product', [$product->category->code , $product->code])}}" class="btn btn-default" role="button">Подробнее</a>
-                <input type="hidden" name="_token" value="0FEIUVKMrZ5ORLC5bs98u2bL9oXVRK8nlbF6yT3L"> 
                 @csrf
                 </form>
             </p>
