@@ -10,7 +10,21 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+Auth::routes([
+    'reset' =>false,
+    'confirm' => false,
+    'verify' => false,
+]);
+Route::get('/logout', 'Auth\LoginController@logout')->name('get-logout');
 Route::get('/', 'MainController@index')->name('index');
+Route::group(
+    [
+    'middleware' => 'auth',
+    'namespace' => 'Admin',
+    ], function(){
+    Route::get('/home' , 'ordersConrtoller@index')->name('home');
+
+});
 
 // Корзина
 
@@ -25,3 +39,4 @@ Route::post('/basket/place', 'BasketController@basketConfirm')->name('basket-con
 Route::get('/categories', 'MainController@categories')->name('categories');
 Route::get('/{category}', 'MainController@category')->name('category');
 Route::get('/{category}/{product?}', 'MainController@product')->name('product');
+
